@@ -27,6 +27,14 @@ func main() {
 		findAll()
 	case "types":
 		generateTypes()
+	case "dump-stat-chinese":
+		dumpStatChinese()
+	}
+}
+
+func dumpStatChinese() {
+	if err := os.WriteFile("./frontend/src/lib/stat-id-chinese.json", data.StatIdToChineseJSON, 0644); err != nil {
+		panic(err)
 	}
 }
 

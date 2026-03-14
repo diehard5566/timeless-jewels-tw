@@ -1,5 +1,7 @@
 import type { Translation, Node, SkillTreeData, Group, Sprite, TranslationFile } from './skill_tree_types';
 import { data } from './types';
+import statIdChineseFromData from './stat-id-chinese.json';
+import { statChinese, statIdChinese } from './values';
 
 export let skillTree: SkillTreeData;
 
@@ -10,6 +12,9 @@ export const inverseSprites: Record<string, Sprite> = {};
 export const inverseSpritesActive: Record<string, Sprite> = {};
 
 export const inverseTranslations: Record<string, Translation> = {};
+
+/** GGG stat Id → 繁中，由 WASM 依 Stats + AlternatePassiveAdditions 建出 */
+export let statIdToChineseFromWasm: Record<string, string> = {};
 
 export const passiveToTree: Record<number, number> = {};
 
@@ -104,6 +109,12 @@ export const loadSkillTree = () => {
       });
     });
   });
+
+  try {
+    statIdToChineseFromWasm = (data.StatIdToChineseJSON && JSON.parse(data.StatIdToChineseJSON)) || {};
+  } catch {
+    statIdToChineseFromWasm = {};
+  }
 
   Object.keys(data.TreeToPassive).forEach((k) => {
     passiveToTree[data.TreeToPassive[parseInt(k)].Index] = parseInt(k);
@@ -337,9 +348,39 @@ export interface SearchResults {
 }
 
 export const translateStat = (id: number, roll?: number | undefined): string => {
+  const chinese = statChinese[id];
+  if (chinese !== undefined) {
+    if (roll !== undefined) {
+      return chinese.replace(/#/, String(roll));
+    }
+    return chinese;
+  }
+
   const stat = getStat(id);
+  const staticChinese = (statIdChineseFromData as Record<string, string>)[stat.ID];
+  if (staticChinese !== undefined) {
+    if (roll !== undefined) {
+      return staticChinese.replace(/#/, String(roll));
+    }
+    return staticChinese;
+  }
+  const wasmChinese = statIdToChineseFromWasm[stat.ID];
+  if (wasmChinese !== undefined) {
+    if (roll !== undefined) {
+      return wasmChinese.replace(/#/, String(roll));
+    }
+    return wasmChinese;
+  }
+  const idChinese = statIdChinese[stat.ID];
+  if (idChinese !== undefined) {
+    if (roll !== undefined) {
+      return idChinese.replace(/#/, String(roll));
+    }
+    return idChinese;
+  }
+
   const translation = inverseTranslations[stat.ID];
-  if (roll) {
+  if (roll !== undefined) {
     return formatStats(translation, roll) || stat.ID;
   }
 
@@ -483,7 +524,7 @@ export const openTrade = (
   }
 
   const url = new URL(
-    `https://www.pathofexile.com/trade/search${platform === 'PC' ? '' : `/${platform.toLowerCase()}`}/${league}`
+    `https://pathofexile.tw/trade/search${platform === 'PC' ? '' : `/${platform.toLowerCase()}`}/${league}`
   );
   url.searchParams.set('q', JSON.stringify(constructQuery(jewel, conqueror, results)));
 

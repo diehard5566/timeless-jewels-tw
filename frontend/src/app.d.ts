@@ -11,6 +11,11 @@ declare namespace App {
 }
 
 declare global {
+  class Go {
+    importObject: WebAssembly.Imports;
+    run(instance: WebAssembly.Instance): Promise<void>;
+  }
+
   function Calculate(passiveID: number, seed: number, jewelType: number, conqueror: string);
 
   const TimelessJewelSeedRanges: Record<number, { min: number; max: number }>;

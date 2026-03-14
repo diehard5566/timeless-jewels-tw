@@ -82,10 +82,13 @@ export declare namespace data {
   const PassiveSkills: Array<data.PassiveSkill | undefined> | undefined;
   const PossibleStats: string;
   const SkillTree: string;
+  const StatIdToChineseJSON: string;
   const StatTranslationsJSON: string;
+  const ConquerorNameTW: Record<string, string> | undefined;
   const TimelessJewelConquerors: Record<number, Record<string, data.TimelessJewelConqueror | undefined> | undefined> | undefined;
   const TimelessJewelSeedRanges: Record<number, data.Range> | undefined;
   const TimelessJewels: Record<number, string> | undefined;
+  const TimelessJewelsTW: Record<number, string> | undefined;
   const TreeToPassive: Record<number, data.PassiveSkill | undefined> | undefined;
 }
 export const initializeCrystalline: () => void;

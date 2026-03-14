@@ -7,17 +7,17 @@
     distance,
     drawnGroups,
     drawnNodes,
-    formatStats,
     inverseSprites,
     inverseSpritesActive,
-    inverseTranslations,
     orbitAngleAt,
     skillTree,
-    toCanvasCoords
+    toCanvasCoords,
+    translateStat
   } from '../skill_tree';
   import type { Point } from '../skill_tree';
   import { derived } from 'svelte/store';
   import { calculator, data } from '../types';
+  import { browser } from '$app/environment';
 
   export let clickNode: (node: Node) => void;
   export let circledNode: number | undefined;
@@ -151,7 +151,7 @@
 
   let hoveredNode: Node | undefined;
   $: render = (({ context, width, height }) => {
-    const start = window.performance.now();
+    const start = browser ? window.performance.now() : 0;
 
     context.clearRect(0, 0, width, height);
 
@@ -350,11 +350,10 @@
 
               if ('StatsKeys' in result.AlternatePassiveSkill) {
                 result.AlternatePassiveSkill.StatsKeys.forEach((statId, i) => {
-                  const stat = data.GetStatByIndex(statId);
-                  const translation = inverseTranslations[stat.ID] || '';
-                  if (translation) {
+                  const text = translateStat(statId, result.StatRolls[i]);
+                  if (text) {
                     nodeStats.push({
-                      text: formatStats(translation, result.StatRolls[i]) || stat.ID,
+                      text,
                       special: true
                     });
                   }
@@ -366,11 +365,10 @@
               result.AlternatePassiveAdditionInformations.forEach((info) => {
                 if ('StatsKeys' in info.AlternatePassiveAddition) {
                   info.AlternatePassiveAddition.StatsKeys.forEach((statId, i) => {
-                    const stat = data.GetStatByIndex(statId);
-                    const translation = inverseTranslations[stat.ID] || '';
-                    if (translation) {
+                    const text = translateStat(statId, info.StatRolls[i]);
+                    if (text) {
                       nodeStats.push({
-                        text: formatStats(translation, info.StatRolls[i]) || stat.ID,
+                        text,
                         special: true
                       });
                     }
@@ -423,7 +421,7 @@
         });
       } else if (hoveredNode.isJewelSocket) {
         allLines.push({
-          text: 'Click to select this socket',
+          text: '點選以選擇此珠寶插槽',
           offset,
           special: true
         });
@@ -467,7 +465,7 @@
     context.textAlign = 'right';
     context.font = '12px Roboto Mono';
 
-    const end = window.performance.now();
+    const end = browser ? window.performance.now() : 0;
 
     context.fillText(`${(end - start).toFixed(1)}ms`, width - 5, 17);
   }) as RenderFunc;
@@ -542,18 +540,24 @@
   let width = 0;
   let height = 0;
   const resize = () => {
+    if (!browser) {
+      return;
+    }
+
     width = window.innerWidth;
     height = window.innerHeight;
   };
 
   let initialized = false;
   $: {
-    if (!initialized && skillTree) {
-      initialized = true;
-      offsetX = skillTree.min_x + (window.innerWidth / 2) * scaling;
-      offsetY = skillTree.min_y + (window.innerHeight / 2) * scaling;
+    if (browser) {
+      if (!initialized && skillTree) {
+        initialized = true;
+        offsetX = skillTree.min_x + (window.innerWidth / 2) * scaling;
+        offsetY = skillTree.min_y + (window.innerHeight / 2) * scaling;
+      }
+      resize();
     }
-    resize();
   }
 </script>
 

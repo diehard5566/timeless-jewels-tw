@@ -27,7 +27,7 @@
         class="text-lg w-full p-2 px-4 bg-neutral-500/30 rounded flex flex-row justify-between mb-2"
         on:click={() => (expandedGroup = expandedGroup === k ? '' : k)}>
         <span>
-          {k} Match{k > 1 ? 'es' : ''} [{searchResults.grouped[k].length}]
+          {k} 筆符合 [{searchResults.grouped[k].length}]
         </span>
         <span>
           {expandedGroup === k ? '^' : 'V'}

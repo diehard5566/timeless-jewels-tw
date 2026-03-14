@@ -1,75 +1,259 @@
+/**
+ * 詞綴 ID → 繁中描述（# 為數值佔位，會由 translateStat 替換）
+ * 有在此 map 的詞綴會顯示中文，其餘仍用遊戲資料英文
+ */
+export const statChinese: Record<number, string> = {
+  25: '增加 #% 法術傷害',
+  26: '增加 #% 物理傷害',
+  42: '增加 #% 火焰傷害',
+  49: '增加 #% 冰冷傷害',
+  56: '增加 #% 閃電傷害',
+  63: '增加 #% 混沌傷害',
+  70: '增加 #% 攻擊速度',
+  95: '+#% 全域暴擊加成',
+  117: '增加 #% 護甲',
+  124: '增加 #% 最大生命',
+  134: '增加 #% 最大能量護盾',
+  150: '+#% 混沌抗性',
+  216: '增加 #% 施放速度',
+  434: '增加 #% 範圍效果',
+  482: '#% 物理傷害轉換為火焰傷害',
+  483: '#% 物理傷害轉換為冰冷傷害',
+  484: '#% 物理傷害轉換為閃電傷害',
+  488: '召喚物增加 #% 所造成的傷害',
+  554: '增加 #% 暴擊率',
+  556: '增加 #% 法術暴擊率',
+  593: '傷害穿透 #% 火焰抗性',
+  594: '傷害穿透 #% 冰冷抗性',
+  595: '傷害穿透 #% 閃電抗性',
+  619: '增加 #% 範圍傷害',
+  943: '+#% 最大火焰抗性',
+  944: '+#% 最大冰冷抗性',
+  945: '+#% 最大閃電抗性',
+  946: '+#% 最大混沌抗性',
+  2133: '#% 混沌傷害偷取生命',
+  3108: '#% 物理傷害偷取生命',
+  3109: '#% 火焰傷害偷取生命',
+  3110: '#% 冰冷傷害偷取生命',
+  3111: '#% 閃電傷害偷取生命',
+  5815: '#% 機率造成兩倍傷害',
+  8835: '#% 法術傷害偷取能量護盾',
+  9091: '你造成的流血傷害加速 #%',
+  9772: '擊中時有 #% 機率造成凋零，持續 2 秒',
+  14775: '+#% 壓抑法術傷害率',
+  209: '增加 #% 燃燒傷害',
+  447: '獲得 #% 物理傷害的火焰傷害',
+  573: '+# 力量',
+  1294: '+#% 近戰暴擊加成',
+  1361: '增加 #% 近戰傷害',
+  2031: '增加 #% 力量',
+  8177: '擊中時有 #% 機率威嚇敵人 4 秒',
+  448: '獲得 #% 物理傷害的冰冷傷害',
+  486: '增加 #% 元素傷害',
+  579: '+# 敏捷',
+  1404: '擊殺時獲得 # 秒猛攻',
+  2030: '增加 #% 敏捷',
+  9090: '你造成的中毒傷害加速 #%',
+  9711: '當你至少有 150 個奉獻，15% 物理傷害轉化為火焰傷害',
+  9712: '當你至少有 150 個奉獻，15% 物理傷害轉化為冰冷傷害',
+  9713: '當你至少有 150 個奉獻，15% 物理傷害轉化為閃電傷害',
+  9714: '當你至少有 150 個奉獻，獲得 #% 最大魔力的額外最大能量護盾',
+  9716: '當你至少有 150 個奉獻，+1 最小耐力球',
+  9717: '當你至少有 150 個奉獻，+1 最小暴擊球',
+  9718: '當你至少有 150 個奉獻，+1 最小狂怒球',
+  9721: '若你至少有 150 個奉獻，+1% 全部最大抗性',
+  9722: '若你至少有 150 個奉獻，有 #% 機率造成火焰曝曬',
+  9723: '若你至少有 150 個奉獻，有 #% 機率造成冰冷曝曬',
+  9724: '若你至少有 150 個奉獻，有 #% 機率造成閃電曝曬',
+  186: '#% 機率獲得 1 顆狂怒球',
+  490: '增加 #% 近戰物理傷害',
+  1251: '暴擊時 #% 機率獲得暴擊球',
+  1654: '每顆狂怒球增加 #% 傷害',
+  3392: '每顆耐力球增加 #% 傷害',
+  6042: '增加 #% 流血傷害',
+  6048: '攻擊技能增加 #% 火焰傷害',
+  6049: '攻擊技能增加 #% 冰冷傷害',
+  6050: '攻擊技能增加 #% 閃電傷害',
+  6136: '每顆暴擊球增加 #% 傷害',
+  7499: '若你近期被擊中，每秒獲得 # 顆耐力球'
+};
+
+/**
+ * 永恆珠寶 天賦 Additions 96 筆：以遊戲 stat.ID（對應 poedb Code）對照繁中
+ * 參考：https://poedb.tw/tw/Timeless_Jewel#永恆珠寶天賦Additions
+ * # 為數值佔位
+ */
+export const statIdChinese: Record<string, string> = {
+  vaal_small_fire_damage: '增加 #% 火焰傷害',
+  vaal_small_cold_damage: '增加 #% 冰冷傷害',
+  vaal_small_lightning_damage: '增加 #% 閃電傷害',
+  vaal_small_physical_damage: '增加 #% 物理傷害',
+  vaal_small_chaos_damage: '增加 #% 混沌傷害',
+  vaal_small_minion_damage: '增加 #% 召喚物所造成的傷害',
+  vaal_small_attack_damage: '增加 #% 攻擊傷害',
+  vaal_small_spell_damage: '增加 #% 法術傷害',
+  vaal_small_area_damage: '增加 #% 範圍傷害',
+  vaal_small_projectile_damage: '增加 #% 投射物傷害',
+  vaal_small_damage_over_time: '增加 #% 持續傷害',
+  vaal_small_area_of_effect: '增加 #% 範圍效果',
+  vaal_small_projectile_speed: '增加 #% 投射物速度',
+  vaal_small_critical_strike_chance: '增加 #% 暴擊率',
+  vaal_small_critical_strike_multiplier: '+#% 基礎暴擊加成',
+  vaal_small_attack_speed: '增加 #% 攻擊速度',
+  vaal_small_cast_speed: '增加 #% 施放速度',
+  vaal_small_movement_speed: '增加 #% 移動速度',
+  vaal_small_chance_to_ignite: '#% 機率使用火焰傷害擊中敵人造成點燃效果',
+  vaal_small_chance_to_freeze: '#% 機率使用冰冷傷害擊中敵人造成冰凍效果',
+  vaal_small_chance_to_shock: '#% 機率使用閃電傷害擊中敵人造成感電效果',
+  vaal_small_duration: '增加 #% 技能效果持續時間',
+  vaal_small_life: '增加 #% 最大生命',
+  vaal_small_mana: '增加 #% 最大魔力',
+  vaal_small_mana_regeneration: '增加 #% 魔力回復率',
+  vaal_small_armour: '增加 #% 護甲',
+  vaal_small_evasion: '增加 #% 閃避值',
+  vaal_small_energy_shield: '增加 #% 最大能量護盾',
+  vaal_small_attack_block: '+#% 攻擊傷害格擋率',
+  vaal_small_spell_block: '#% 法術傷害格擋率',
+  vaal_small_attack_dodge: '#% 機率避免元素異常狀態',
+  vaal_small_spell_dodge: '+#% 壓抑法術傷害率',
+  vaal_small_aura_effect: '增加 #% 你技能的非詛咒光環效果',
+  vaal_small_curse_effect: '增加 #% 你所施放詛咒的效果',
+  vaal_small_fire_resistance: '+#% 火焰抗性',
+  vaal_small_cold_resistance: '+#% 冰冷抗性',
+  vaal_small_lightning_resistance: '+#% 閃電抗性',
+  vaal_small_chaos_resistance: '+#% 混沌抗性',
+  karui_attribute_strength: '+# 力量',
+  karui_small_strength: '+# 力量',
+  karui_notable_add_strength: '+# 力量',
+  karui_notable_add_percent_strength: '增加 #% 力量',
+  karui_notable_add_armour: '增加 #% 護甲',
+  karui_notable_add_leech: '#% 攻擊傷害偷取生命',
+  karui_notable_add_double_damage: '#% 機率造成兩倍傷害',
+  karui_notable_add_life: '增加 #% 最大生命',
+  karui_notable_add_fortify_effect: '+# 最大護體',
+  karui_notable_add_life_regen: '每秒回復 #% 生命',
+  karui_notable_add_fire_resistance: '+#% 火焰抗性',
+  karui_notable_add_melee_damage: '增加 #% 近戰傷害',
+  karui_notable_add_damage_from_crits: '減少 #% 承受的暴擊傷害',
+  karui_notable_add_melee_crit_chance: '增加 #% 近戰暴擊率',
+  karui_notable_add_burning_damage: '增加 #% 燃燒傷害',
+  karui_notable_add_totem_damage: '增加 #% 圖騰傷害',
+  karui_notable_add_melee_crit_multi: '+#% 近戰暴擊加成',
+  karui_notable_add_physical_damage: '增加 #% 物理傷害',
+  karui_notable_add_warcry_buff_effect: '增加 #% 戰吼的增益效果',
+  karui_notable_add_totem_placement_speed: '增加 #% 圖騰放置速度',
+  karui_notable_add_stun_duration: '增加 #% 敵人暈眩時間',
+  karui_notable_add_faster_burn: '你造成的點燃傷害加速 #%',
+  karui_notable_add_reduced_stun_threshold: '減少 #% 敵人暈眩門檻',
+  karui_notable_add_physical_added_as_fire: '獲得 #% 物理傷害的火焰傷害',
+  karui_notable_add_physical_taken_as_fire: '近戰擊中時獲得 # 層盛怒',
+  karui_notable_add_endurance_charge_on_kill: '#% 機率擊殺時獲得 1 顆耐力球',
+  karui_notable_add_intimidate: '擊中時有 #% 機率威嚇敵人 4 秒',
+  maraketh_attribute_dex: '+# 敏捷',
+  maraketh_small_dex: '+# 敏捷',
+  maraketh_notable_add_dexterity: '+# 敏捷',
+  maraketh_notable_add_percent_dexterity: '增加 #% 敏捷',
+  maraketh_notable_add_evasion: '增加 #% 閃避值',
+  maraketh_notable_add_flask_charges: '增加 #% 藥劑充能獲取',
+  maraketh_notable_add_speed: '增加 #% 攻擊與施放速度',
+  maraketh_notable_add_life: '增加 #% 最大生命',
+  maraketh_notable_add_blind: '擊中敵人時有 #% 機率致盲',
+  maraketh_notable_add_movement_speed: '增加 #% 移動速度',
+  maraketh_notable_add_cold_resistance: '+#% 冰冷抗性',
+  maraketh_notable_add_projectile_damage: '增加 #% 投射物傷害',
+  maraketh_notable_add_ailment_avoid: '#% 機率避免被暈眩',
+  maraketh_notable_add_global_crit_chance: '增加 #% 暴擊率',
+  maraketh_notable_add_poison_damage: '增加 #% 中毒傷害',
+  maraketh_notable_add_minion_damage: '增加 #% 召喚物所造成的傷害',
+  maraketh_notable_add_accuracy: '增加 #% 全域命中值',
+  maraketh_notable_add_elemental_damage: '增加 #% 元素傷害',
+  maraketh_notable_add_aura_effect: '增加 #% 你技能的非詛咒光環效果',
+  maraketh_notable_add_minion_movement_speed: '召喚物增加 #% 移動速度',
+  maraketh_notable_add_ailment_duration: '增加 #% 敵人身上元素異常狀態時間',
+  maraketh_notable_add_faster_poison: '你造成的中毒傷害加速 #%',
+  maraketh_notable_add_ailment_effect: '增加 #% 非傷害型異常狀態的效果',
+  maraketh_notable_add_physical_added_as_cold: '獲得 #% 物理傷害的冰冷傷害',
+  maraketh_notable_add_flask_effect: '當你使用藥劑時有 #% 機率獲得鍊金之材',
+  maraketh_notable_add_frenzy_charge_on_kill: '擊殺時有 #% 機率獲得 1 顆狂怒球',
+  maraketh_notable_add_onslaught: '擊殺時獲得 # 秒猛攻',
+  templar_small_devotion: '+# 奉獻',
+  templar_notable_devotion: '+# 奉獻',
+  kalguuran_small_ward: '增加 #% 保護',
+  kalguuran_attribute_ward: '增加 #% 保護'
+};
+
 export const statValues = {
-  25: 1, // #% increased Spell Damage
-  26: 1, // #% increased Physical Damage
-  42: 1, // #% increased Fire Damage
-  49: 1, // #% increased Cold Damage
-  56: 1, // #% increased Lightning Damage
-  63: 1, // #% increased Chaos Damage
-  70: 2, // #% increased Attack Speed
-  95: 4, // +#% to Critical Strike Multiplier
-  117: 1, // #% increased Armour
-  124: 4, // #% increased maximum Life
-  134: 1, // #% increased maximum Energy Shield
-  150: 2, // +#% to Chaos Resistance
-  216: 1, // #% increased Cast Speed
-  434: 1, // #% increased Area of Effect
-  482: 1, // #% of Physical Damage Converted to Fire Damage
-  483: 1, // #% of Physical Damage Converted to Cold Damage
-  484: 1, // #% of Physical Damage Converted to Lightning Damage
-  488: 1, // Minions deal #% increased Damage
-  554: 1, // #% increased Critical Strike Chance
-  556: 1, // #% increased Critical Strike Chance for Spells
-  593: 3, // Damage Penetrates #% Fire Resistance
-  594: 3, // Damage Penetrates #% Cold Resistance
-  595: 3, // Damage Penetrates #% Lightning Resistance
-  619: 1, // #% increased Area Damage
-  943: 1, // +#% to maximum Fire Resistance
-  944: 1, // +#% to maximum Cold Resistance
-  945: 1, // +#% to maximum Lightning Resistance
-  946: 1, // +#% to maximum Chaos Resistance
-  2133: 4, // #% of Chaos Damage Leeched as Life
-  3108: 3, // #% of Physical Damage Leeched as Life
-  3109: 4, // #% of Fire Damage Leeched as Life
-  3110: 4, // #% of Cold Damage Leeched as Life
-  3111: 4, // #% of Lightning Damage Leeched as Life
-  5815: 4, // #% chance to deal Double Damage
-  8835: 1, // #% of Spell Damage Leeched as Energy Shield
-  9091: 1, // Bleeding you inflict deals Damage #% faster
-  9772: 1, // #% chance to inflict Withered for 2 seconds on Hit
-  14775: 2, // +#% chance to Suppress Spell Damage
-  209: 1, // #% increased Burning Damage
-  447: 1, // Gain #% of Physical Damage as Extra Fire Damage
-  573: 2, // +# to Strength
-  1294: 1, // +#% to Melee Critical Strike Multiplier
-  1361: 1, // #% increased Melee Damage
-  2031: 5, // #% increased Strength
-  8177: 2, // #% chance to Intimidate Enemies for 4 seconds on Hit
-  448: 2, // Gain #% of Physical Damage as Extra Cold Damage
-  486: 1, // #% increased Elemental Damage
-  579: 2, // +# to Dexterity
-  1404: 1, // You gain Onslaught for # seconds on Kill
-  2030: 5, // #% increased Dexterity
-  9090: 1, // Poisons you inflict deal Damage #% faster
-  9711: 2, // #% of Physical Damage Converted to Fire Damage while you have at least 150 Devotion
-  9712: 2, // #% of Physical Damage Converted to Cold Damage while you have at least 150 Devotion
-  9713: 2, // #% of Physical Damage Converted to Lightning Damage while you have at least 150 Devotion
-  9714: 2, // Gain #% of Maximum Mana as Extra Maximum Energy Shield while you have at least 150 Devotion
-  9716: 1, // +# to Minimum Endurance Charges while you have at least 150 Devotion
-  9717: 1, // +# to Minimum Power Charges while you have at least 150 Devotion
-  9718: 1, // +# to Minimum Frenzy Charges while you have at least 150 Devotion
-  9721: 1, // +#% to all maximum Resistances if you have at least 150 Devotion
-  9722: 1, // #% chance to inflict Fire Exposure on Hit if you have at least 150 Devotion
-  9723: 1, // #% chance to inflict Cold Exposure on Hit if you have at least 150 Devotion
-  9724: 1, // #% chance to inflict Lightning Exposure on Hit if you have at least 150 Devotion
-  186: 2, // #% chance to gain a Frenzy Charge on Hit
-  490: 1, // #% increased Melee Physical Damage
-  1251: 3, // #% chance to gain a Power Charge on Critical Strike
-  1654: 1, // #% increased Damage per Frenzy Charge
-  3392: 1, // #% increased Damage per Endurance Charge
-  6042: 1, // #% increased Damage with Bleeding
-  6048: 1, // #% increased Fire Damage with Attack Skills
-  6049: 1, // #% increased Cold Damage with Attack Skills
-  6050: 1, // #% increased Lightning Damage with Attack Skills
-  6136: 1, // #% increased Damage per Power Charge
-  7499: 2 // Gain # Endurance Charge every second if you've been Hit Recently
+  25: 1,
+  26: 1,
+  42: 1,
+  49: 1,
+  56: 1,
+  63: 1,
+  70: 2,
+  95: 4,
+  117: 1,
+  124: 4,
+  134: 1,
+  150: 2,
+  216: 1,
+  434: 1,
+  482: 1,
+  483: 1,
+  484: 1,
+  488: 1,
+  554: 1,
+  556: 1,
+  593: 3,
+  594: 3,
+  595: 3,
+  619: 1,
+  943: 1,
+  944: 1,
+  945: 1,
+  946: 1,
+  2133: 4,
+  3108: 3,
+  3109: 4,
+  3110: 4,
+  3111: 4,
+  5815: 4,
+  8835: 1,
+  9091: 1,
+  9772: 1,
+  14775: 2,
+  209: 1,
+  447: 1,
+  573: 2,
+  1294: 1,
+  1361: 1,
+  2031: 5,
+  8177: 2,
+  448: 2,
+  486: 1,
+  579: 2,
+  1404: 1,
+  2030: 5,
+  9090: 1,
+  9711: 2,
+  9712: 2,
+  9713: 2,
+  9714: 2,
+  9716: 1,
+  9717: 1,
+  9718: 1,
+  9721: 1,
+  9722: 1,
+  9723: 1,
+  9724: 1,
+  186: 2,
+  490: 1,
+  1251: 3,
+  1654: 1,
+  3392: 1,
+  6042: 1,
+  6048: 1,
+  6049: 1,
+  6050: 1,
+  6136: 1,
+  7499: 2
 };

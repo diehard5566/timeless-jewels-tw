@@ -11,28 +11,31 @@
   import SearchResults from '../../lib/components/SearchResults.svelte';
   import { statValues } from '../../lib/values';
   import { data, calculator } from '../../lib/types';
+  import { getJewelLabel, getConquerorLabel } from '../../lib/jewel-labels';
+  import { browser } from '$app/environment';
   import { onMount } from 'svelte';
 
   const searchParams = $page.url.searchParams;
 
-  const jewels = Object.keys(data.TimelessJewels).map((k) => ({
+  $: jewels = Object.keys(data?.TimelessJewels || {}).map((k) => ({
     value: parseInt(k),
-    label: data.TimelessJewels[k]
+    label: getJewelLabel(data?.TimelessJewelsTW, data?.TimelessJewels, k)
   }));
 
-  let selectedJewel = searchParams.has('jewel') ? jewels.find((j) => j.value == searchParams.get('jewel')) : undefined;
+  let selectedJewel = searchParams.has('jewel') ? (jewels ?? []).find((j) => j.value == searchParams.get('jewel')) : undefined;
 
-  $: conquerors = selectedJewel
-    ? Object.keys(data.TimelessJewelConquerors[selectedJewel.value]).map((k) => ({
+  $: conquerors = selectedJewel && data?.TimelessJewelConquerors?.[selectedJewel.value]
+    ? Object.keys(data?.TimelessJewelConquerors[selectedJewel.value]).map((k) => ({
         value: k,
-        label: k
+        label: getConquerorLabel(data?.ConquerorNameTW, k)
       }))
     : [];
 
-  let selectedConqueror = searchParams.has('conqueror')
+  const conquerorFromUrl = searchParams.get('conqueror');
+  let selectedConqueror = searchParams.has('conqueror') && conquerorFromUrl
     ? {
-        value: searchParams.get('conqueror'),
-        label: searchParams.get('conqueror')
+        value: conquerorFromUrl,
+        label: getConquerorLabel(data?.ConquerorNameTW, conquerorFromUrl)
       }
     : undefined;
 
@@ -42,22 +45,26 @@
     ? parseInt(searchParams.get('location'))
     : undefined;
 
-  $: affectedNodes = circledNode
-    ? getAffectedNodes(skillTree.nodes[circledNode]).filter((n) => !n.isJewelSocket && !n.isMastery)
-    : [];
+  $: affectedNodes =
+    circledNode && skillTree?.nodes?.[circledNode]
+      ? getAffectedNodes(skillTree.nodes[circledNode]).filter((n) => !n.isJewelSocket && !n.isMastery)
+      : [];
 
   $: seedResults =
     !seed ||
     !selectedJewel ||
     !selectedConqueror ||
-    Object.keys(data.TimelessJewelConquerors[selectedJewel.value]).indexOf(selectedConqueror.value) < 0
+    !data?.TimelessJewelConquerors?.[selectedJewel.value] ||
+    Object.keys(data?.TimelessJewelConquerors?.[selectedJewel.value] ?? []).indexOf(selectedConqueror.value) < 0 ||
+    !calculator ||
+    !data?.TreeToPassive
       ? []
       : affectedNodes
-          .filter((n) => !!data.TreeToPassive[n.skill])
+          .filter((n) => !!data?.TreeToPassive[n.skill])
           .map((n) => ({
             node: n.skill,
             result: calculator.Calculate(
-              data.TreeToPassive[n.skill].Index,
+              data?.TreeToPassive[n.skill].Index,
               seed,
               selectedJewel.value,
               selectedConqueror.value
@@ -123,7 +130,7 @@
     }
   };
 
-  const allPossibleStats: { [key: string]: { [key: string]: number } } = JSON.parse(data.PossibleStats);
+  const allPossibleStats: { [key: string]: { [key: string]: number } } = JSON.parse(data?.PossibleStats ?? '{}');
 
   $: availableStats = !selectedJewel ? [] : Object.keys(allPossibleStats[selectedJewel.value]);
   $: statItems = availableStats
@@ -182,7 +189,7 @@
       conqueror: selectedConqueror.value,
       nodes: affectedNodes
         .filter((n) => !disabled.has(n.skill))
-        .map((n) => data.TreeToPassive[n.skill])
+        .map((n) => data?.TreeToPassive[n.skill])
         .filter((n) => !!n)
         .map((n) => n.Index),
       stats: Object.keys(selectedStats).map((stat) => selectedStats[stat]),
@@ -240,9 +247,10 @@
     disabled = disabled;
   };
 
-  let groupResults =
-    localStorage.getItem('groupResults') === null ? true : localStorage.getItem('groupResults') === 'true';
-  $: localStorage.setItem('groupResults', groupResults ? 'true' : 'false');
+  let groupResults = browser
+    ? (localStorage.getItem('groupResults') === null ? true : localStorage.getItem('groupResults') === 'true')
+    : true;
+  $: if (browser) localStorage.setItem('groupResults', groupResults ? 'true' : 'false');
 
   type CombinedResult = {
     id: string;
@@ -360,31 +368,35 @@
 
   const sortResults = [
     {
-      label: 'Count',
+      label: '依數量',
       value: 'count'
     },
     {
-      label: 'Alphabetical',
+      label: '依名稱',
       value: 'alphabet'
     },
     {
-      label: 'Rarity',
+      label: '依稀有度',
       value: 'rarity'
     },
     {
-      label: 'Value',
+      label: '依評分',
       value: 'value'
     }
   ] as const;
 
-  let sortOrder = sortResults.find((r) => r.value === (localStorage.getItem('sortOrder') || 'count'));
-  $: localStorage.setItem('sortOrder', sortOrder.value);
+  let sortOrder = sortResults.find((r) => r.value === (browser ? localStorage.getItem('sortOrder') : null) || 'count');
+  $: if (browser) localStorage.setItem('sortOrder', sortOrder.value);
 
-  let colored = localStorage.getItem('colored') === null ? true : localStorage.getItem('colored') === 'true';
-  $: localStorage.setItem('colored', colored ? 'true' : 'false');
+  let colored = browser
+    ? (localStorage.getItem('colored') === null ? true : localStorage.getItem('colored') === 'true')
+    : true;
+  $: if (browser) localStorage.setItem('colored', colored ? 'true' : 'false');
 
-  let split = localStorage.getItem('split') === null ? true : localStorage.getItem('split') === 'true';
-  $: localStorage.setItem('split', split ? 'true' : 'false');
+  let split = browser
+    ? (localStorage.getItem('split') === null ? true : localStorage.getItem('split') === 'true')
+    : true;
+  $: if (browser) localStorage.setItem('split', split ? 'true' : 'false');
 
   const onPaste = (event: ClipboardEvent) => {
     if (event.type !== 'paste') {
@@ -406,7 +418,7 @@
     let newSeed: number | undefined;
     let conqueror: string | undefined;
     for (let i = 10; i < lines.length; i++) {
-      conqueror = Object.keys(data.TimelessJewelConquerors[jewel.value]).find((k) => lines[i].indexOf(k) >= 0);
+      conqueror = Object.keys(data?.TimelessJewelConquerors[jewel.value]).find((k) => lines[i].indexOf(k) >= 0);
       if (conqueror) {
         const matches = /(\d+)/.exec(lines[i]);
         if (matches.length === 0) {
@@ -426,7 +438,7 @@
     mode = 'seed';
     seed = newSeed;
     selectedJewel = jewel;
-    selectedConqueror = { label: conqueror, value: conqueror };
+    selectedConqueror = { label: getConquerorLabel(data?.ConquerorNameTW, conqueror), value: conqueror };
     updateUrl();
   };
 
@@ -445,8 +457,8 @@
   }
   ];
 
-  let platform = platforms.find((p) => p.value === localStorage.getItem('platform')) || platforms[0];
-  $: localStorage.setItem('platform', platform.value);
+  let platform = platforms.find((p) => p.value === (browser ? localStorage.getItem('platform') : null)) || platforms[0];
+  $: if (browser) localStorage.setItem('platform', platform.value);
 
   let leagues: { value: string; label: string }[] = [];
   let league: { value: string; label: string } | undefined;
@@ -454,10 +466,10 @@
     const response = await fetch('https://api.poe.watch/leagues');
     const responseJson = await response.json();
     leagues = responseJson.map((l: { name: string }) => ({ value: l.name, label: l.name }));
-    league = leagues.find((l) => l.value === localStorage.getItem('league')) || leagues[0];
+    league = leagues.find((l) => l.value === (browser ? localStorage.getItem('league') : null)) || leagues[0];
   };
 
-  $: league && localStorage.setItem('league', league.value);
+  $: if (browser && league) localStorage.setItem('league', league.value);
 
   onMount(() => {
     getLeagues();
@@ -489,9 +501,9 @@
 
             <h3 class="flex-grow">
               {#if results}
-                <span>Results</span>
+                <span>結果</span>
               {:else}
-                <span>Timeless Jewel</span>
+                <span>永恆珠寶</span>
               {/if}
             </h3>
           </div>
@@ -504,18 +516,18 @@
                   class="p-1 px-3 bg-blue-500/40 rounded disabled:bg-blue-900/40"
                   on:click={() => openTrade(searchJewel, searchConqueror, searchResults.raw, platform.value, league.value)}
                   disabled={!searchResults}>
-                  Trade
+                  交易
                 </button>
                 <button
                   class="p-1 px-3 bg-blue-500/40 rounded disabled:bg-blue-900/40"
                   class:grouped={groupResults}
                   on:click={() => (groupResults = !groupResults)}
                   disabled={!searchResults}>
-                  Grouped
+                  群組顯示
                 </button>
               {/if}
               <button class="bg-neutral-100/20 px-4 p-1 rounded" on:click={() => (results = !results)}>
-                {results ? 'Config' : 'Results'}
+                {results ? '設定' : '結果'}
               </button>
             </div>
           {/if}
@@ -526,41 +538,41 @@
 
           {#if selectedJewel}
             <div class="mt-4">
-              <h3 class="mb-2">Conqueror</h3>
+              <h3 class="mb-2">征服者</h3>
               <Select items={conquerors} bind:value={selectedConqueror} on:change={updateUrl} />
             </div>
 
-            {#if selectedConqueror && Object.keys(data.TimelessJewelConquerors[selectedJewel.value]).indexOf(selectedConqueror.value) >= 0}
+            {#if selectedConqueror && Object.keys(data?.TimelessJewelConquerors[selectedJewel.value]).indexOf(selectedConqueror.value) >= 0}
               <div class="mt-4 w-full flex flex-row">
                 <button class="selection-button" class:selected={mode === 'seed'} on:click={() => setMode('seed')}>
-                  Enter Seed
+                  輸入種子
                 </button>
                 <button class="selection-button" class:selected={mode === 'stats'} on:click={() => setMode('stats')}>
-                  Select Stats
+                  選擇詞綴
                 </button>
               </div>
 
               {#if mode === 'seed'}
                 <div class="mt-4">
-                  <h3 class="mb-2">Seed</h3>
+                  <h3 class="mb-2">種子</h3>
                   <input
                     type="number"
                     bind:value={seed}
                     on:blur={updateUrl}
-                    min={data.TimelessJewelSeedRanges[selectedJewel.value].Min}
-                    max={data.TimelessJewelSeedRanges[selectedJewel.value].Max} />
-                  {#if seed < data.TimelessJewelSeedRanges[selectedJewel.value].Min || seed > data.TimelessJewelSeedRanges[selectedJewel.value].Max}
+                    min={data?.TimelessJewelSeedRanges[selectedJewel.value].Min}
+                    max={data?.TimelessJewelSeedRanges[selectedJewel.value].Max} />
+                  {#if seed < data?.TimelessJewelSeedRanges[selectedJewel.value].Min || seed > data?.TimelessJewelSeedRanges[selectedJewel.value].Max}
                     <div class="mt-2">
-                      Seed must be between {data.TimelessJewelSeedRanges[selectedJewel.value].Min}
-                      and {data.TimelessJewelSeedRanges[selectedJewel.value].Max}
+                      種子必須介於 {data?.TimelessJewelSeedRanges[selectedJewel.value].Min}
+                      和 {data?.TimelessJewelSeedRanges[selectedJewel.value].Max} 之間
                     </div>
                   {/if}
                 </div>
 
-                {#if seed >= data.TimelessJewelSeedRanges[selectedJewel.value].Min && seed <= data.TimelessJewelSeedRanges[selectedJewel.value].Max}
+                {#if seed >= data?.TimelessJewelSeedRanges[selectedJewel.value].Min && seed <= data?.TimelessJewelSeedRanges[selectedJewel.value].Max}
                   <div class="flex flex-row mt-4 items-end">
                     <div class="flex-grow">
-                      <h3 class="mb-2">Sort Order</h3>
+                      <h3 class="mb-2">排序方式</h3>
                       <Select items={sortResults} bind:value={sortOrder} />
                     </div>
                     <div class="ml-2">
@@ -568,7 +580,7 @@
                         class="bg-neutral-500/20 p-2 px-4 rounded"
                         class:selected={colored}
                         on:click={() => (colored = !colored)}>
-                        Colors
+                        著色
                       </button>
                     </div>
                     <div class="ml-2">
@@ -576,7 +588,7 @@
                         class="bg-neutral-500/20 p-2 px-4 rounded"
                         class:selected={split}
                         on:click={() => (split = !split)}>
-                        Split
+                        分開顯示
                       </button>
                     </div>
                   </div>
@@ -593,7 +605,7 @@
                     </ul>
                   {:else}
                     <div class="overflow-auto mt-4">
-                      <h3>Notables</h3>
+                      <h3>顯著天賦</h3>
                       <ul class="mt-1" class:rainbow={colored}>
                         {#each sortCombined(combineResults(seedResults, colored, 'notables'), sortOrder.value) as r}
                           <li class="cursor-pointer" on:click={() => highlight(seed, r.passives)}>
@@ -604,7 +616,7 @@
                         {/each}
                       </ul>
 
-                      <h3 class="mt-2">Smalls</h3>
+                      <h3 class="mt-2">小天賦</h3>
                       <ul class="mt-1" class:rainbow={colored}>
                         {#each sortCombined(combineResults(seedResults, colored, 'passives'), sortOrder.value) as r}
                           <li class="cursor-pointer" on:click={() => highlight(seed, r.passives)}>
@@ -619,7 +631,7 @@
                 {/if}
               {:else if mode === 'stats'}
                 <div class="mt-4">
-                  <h3 class="mb-2">Add Stat</h3>
+                  <h3 class="mb-2">新增詞綴條件</h3>
                   <Select items={statItems} on:change={selectStat} bind:this={statSelector} />
                 </div>
                 {#if Object.keys(selectedStats).length > 0}
@@ -636,11 +648,11 @@
                         </div>
                         <div class="mt-2 flex flex-row">
                           <div class="mr-4 flex flex-row items-center">
-                            <div class="mr-2">Min:</div>
+                            <div class="mr-2">最小值：</div>
                             <input type="number" min="0" bind:value={selectedStats[s].min} />
                           </div>
                           <div class="flex flex-row items-center">
-                            <div class="mr-2">Weight:</div>
+                            <div class="mr-2">權重：</div>
                             <input type="number" min="0" bind:value={selectedStats[s].weight} />
                           </div>
                         </div>
@@ -649,7 +661,7 @@
                   </div>
                   <div class="flex flex-col mt-2">
                     <div class="flex flex-row items-center">
-                      <div class="mr-2 min-w-fit">Min Total Weight:</div>
+                      <div class="mr-2 min-w-fit">總權重下限：</div>
                       <input type="number" min="0" bind:value={minTotalWeight} />
                     </div>
                   </div>
@@ -659,25 +671,25 @@
                         class="p-2 px-2 bg-yellow-500/40 rounded disabled:bg-yellow-900/40 mr-2"
                         on:click={selectAll}
                         disabled={searching || disabled.size == 0}>
-                        Select All
+                        全選
                       </button>
                       <button
                         class="p-2 px-2 bg-yellow-500/40 rounded disabled:bg-yellow-900/40 mr-2"
                         on:click={selectAllNotables}
                         disabled={searching || disabled.size == 0}>
-                        Notables
+                        顯著天賦
                       </button>
                       <button
                         class="p-2 px-2 bg-yellow-500/40 rounded disabled:bg-yellow-900/40 mr-2"
                         on:click={selectAllPassives}
                         disabled={searching || disabled.size == 0}>
-                        Passives
+                        小天賦
                       </button>
                       <button
                         class="p-2 px-2 bg-yellow-500/40 rounded disabled:bg-yellow-900/40 flex-grow"
                         on:click={deselectAll}
                         disabled={searching || disabled.size >= affectedNodes.length}>
-                        Deselect
+                        全部取消
                       </button>
                     </div>
                     <div class="flex flex-row mt-2">
@@ -686,9 +698,9 @@
                         on:click={() => search()}
                         disabled={searching}>
                         {#if searching}
-                          {currentSeed} / {data.TimelessJewelSeedRanges[selectedJewel.value].Max}
+                          {currentSeed} / {data?.TimelessJewelSeedRanges[selectedJewel.value].Max}
                         {:else}
-                          Search
+                          搜尋
                         {/if}
                       </button>
                     </div>
@@ -697,7 +709,7 @@
               {/if}
 
               {#if !circledNode}
-                <h2 class="mt-4">Click on a jewel socket</h2>
+                <h2 class="mt-4">請點擊一個珠寶插槽</h2>
               {/if}
             {/if}
           {/if}
@@ -719,7 +731,7 @@
   {/if}
 
   <div class="text-orange-500 absolute bottom-0 right-0 m-2">
-    <a href="https://github.com/Vilsol/timeless-jewels" target="_blank" rel="noopener">Source (Github)</a>
+    <a href="https://github.com/Vilsol/timeless-jewels" target="_blank" rel="noopener">原始碼（GitHub）</a>
   </div>
 </SkillTree>
 

@@ -17,10 +17,13 @@ export const initializeCrystalline = () => {
     PassiveSkills: globalThis["go"]["timeless-jewels"]["data"]["PassiveSkills"],
     PossibleStats: globalThis["go"]["timeless-jewels"]["data"]["PossibleStats"],
     SkillTree: globalThis["go"]["timeless-jewels"]["data"]["SkillTree"],
+    StatIdToChineseJSON: globalThis["go"]["timeless-jewels"]["data"]["StatIdToChineseJSON"],
     StatTranslationsJSON: globalThis["go"]["timeless-jewels"]["data"]["StatTranslationsJSON"],
+    ConquerorNameTW: globalThis["go"]["timeless-jewels"]["data"]["ConquerorNameTW"],
     TimelessJewelConquerors: globalThis["go"]["timeless-jewels"]["data"]["TimelessJewelConquerors"],
     TimelessJewelSeedRanges: globalThis["go"]["timeless-jewels"]["data"]["TimelessJewelSeedRanges"],
     TimelessJewels: globalThis["go"]["timeless-jewels"]["data"]["TimelessJewels"],
+    TimelessJewelsTW: globalThis["go"]["timeless-jewels"]["data"]["TimelessJewelsTW"],
     TreeToPassive: globalThis["go"]["timeless-jewels"]["data"]["TreeToPassive"],
   }
 }

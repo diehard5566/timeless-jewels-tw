@@ -69,6 +69,9 @@ var PassiveSkillAuraStatTranslationsJSON []byte
 var possibleStatsGz []byte
 var PossibleStatsJSON []byte
 
+// StatIdToChineseJSON maps GGG stat Id (from Stats.json) to 繁中 template for timeless jewel additions.
+var StatIdToChineseJSON []byte
+
 func init() {
 	AlternatePassiveAdditions = unzipJSONTo[[]*AlternatePassiveAddition](alternatePassiveAdditionsGz)
 
@@ -129,6 +132,25 @@ func init() {
 	PassiveSkillAuraStatTranslationsJSON = unzipTo(passiveSkillAuraStatTranslationsGz)
 
 	PossibleStatsJSON = unzipTo(possibleStatsGz)
+
+	// GGG stat 來源：Stats.json（見 update_assets.sh，從 go-pob-data 下載）。
+	// AlternatePassiveAdditions.StatsKeys 為 stat index，對應 Stats 的 _key；Stat.Id 即 GGG 的 stat ID。
+	statIdToChinese := make(map[string]string)
+	for _, add := range AlternatePassiveAdditions {
+		chinese, ok := AdditionIDToChinese[add.ID]
+		if !ok {
+			continue
+		}
+		for _, statIndex := range add.StatsKeys {
+			if stat, ok := idToStat[statIndex]; ok && stat != nil {
+				statIdToChinese[stat.ID] = chinese
+			}
+		}
+	}
+	StatIdToChineseJSON, err = json.Marshal(statIdToChinese)
+	if err != nil {
+		panic(err)
+	}
 }
 
 func unzipJSONTo[T any](data []byte) T {

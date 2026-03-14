@@ -27,6 +27,23 @@ func (t JewelType) String() string {
 	}
 }
 
+func (t JewelType) StringTW() string {
+	switch t {
+	case GloriousVanity:
+		return "輝煌的虛榮"
+	case LethalPride:
+		return "致命的驕傲"
+	case BrutalRestraint:
+		return "殘酷的紀律"
+	case MilitantFaith:
+		return "激進的信仰"
+	case ElegantHubris:
+		return "優雅的高傲"
+	default:
+		return "N/A"
+	}
+}
+
 type Conqueror string
 
 const (
@@ -55,6 +72,24 @@ const (
 	Chitus   = Conqueror("Chitus")
 	Caspiro  = Conqueror("Caspiro")
 )
+
+var ConquerorNameTW = map[Conqueror]string{
+	Xibaqua:  "賽巴昆",
+	Ahuana:   "阿呼阿娜",
+	Doryani:  "多里亞尼",
+	Kaom:     "岡姆",
+	Rakiata:  "拉其塔",
+	Akoya:    "阿冦亞",
+	Balbala:  "貝爾巴拉",
+	Asenath:  "安賽娜絲",
+	Nasima:   "納西瑪",
+	Maxarius: "瑪薩里歐斯",
+	Dominus:  "神主",
+	Avarius:  "伊爾莉斯",
+	Cadiro:   "卡迪羅",
+	Victario: "維多里奧",
+	Caspiro:  "卡斯皮羅",
+}
 
 var TimelessJewelConquerors = map[JewelType]map[Conqueror]*TimelessJewelConqueror{
 	GloriousVanity: {
