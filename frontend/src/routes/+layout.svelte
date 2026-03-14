@@ -1,3 +1,4 @@
+<!-- 基於 https://github.com/Vilsol/timeless-jewels 修改。原授權 GPL-3.0，著作權歸原作者。 -->
 <script lang="ts">
   import '../app.scss';
   import '../wasm_exec.js';

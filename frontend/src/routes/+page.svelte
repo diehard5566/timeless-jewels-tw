@@ -163,14 +163,13 @@
 
     <div class="flex justify-between">
       <div class="text-right text-orange-500">
-        <a href="https://discord.gg/mfacademy" target="_blank" rel="noopener" class="flex flex-row align-middle">
-          <img src="{assets}/mf-academy-logo.png" width="24px" />
-          <span class="ml-2">MF Academy</span>
+        <a href="{base}/" class="flex flex-row align-middle">
+          <img src="{assets}/logo.png" width="24" height="24" alt="" />
         </a>
       </div>
 
       <div class="text-orange-500">
-        <a href="https://github.com/Vilsol/timeless-jewels" target="_blank" rel="noopener">Source (Github)</a>
+        <a href="https://github.com/Vilsol/timeless-jewels" target="_blank" rel="noopener">基於 Vilsol/timeless-jewels（原始碼）</a>
       </div>
     </div>
   </div>

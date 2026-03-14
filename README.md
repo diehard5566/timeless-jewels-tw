@@ -1,20 +1,42 @@
-# timeless-jewels [![push](https://github.com/Vilsol/timeless-jewels/actions/workflows/push.yml/badge.svg)](https://github.com/Vilsol/timeless-jewels/actions/workflows/push.yaml) ![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/vilsol/timeless-jewels) ![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/vilsol/timeless-jewels) [![GitHub license](https://img.shields.io/github/license/Vilsol/timeless-jewels)](https://github.com/Vilsol/timeless-jewels/blob/master/LICENSE)
+# 永恆珠寶計算器（台灣版）
 
-A simple timeless jewel calculator with a skill tree view
+本專案為 **fork**，在自行網域上提供服務用。
 
-Hosted Version: [https://vilsol.github.io/timeless-jewels](https://vilsol.github.io/timeless-jewels)
+## 來源與授權聲明
 
-Uses data extracted with https://github.com/Vilsol/go-pob-data
+- **本專案基於以下原專案修改而來：**  
+  [https://github.com/Vilsol/timeless-jewels](https://github.com/Vilsol/timeless-jewels)
 
-## Updates to new leagues
+- **原專案網址：**  
+  https://github.com/Vilsol/timeless-jewels
 
-Whenever a new league is coming, the passive tree might get updated.
-**But** it is not guaranteed to contain correct data until a game download is available.
+- **原授權：**  
+  GNU General Public License v3.0 (GPL-3.0)  
+  - 條文全文：<https://www.gnu.org/licenses/gpl-3.0.html>
 
-Specifically, this project depends on the following data tables:
+- **原專案著作權：**  
+  原專案採用 GPL-3.0，著作權由原作者持有。  
+  本 repo 僅保留 GPL-3.0 授權條文，未在 LICENSE 檔案開頭附加原作者姓名；  
+  原專案作者與著作權歸屬請見原 repo：  
+  [Vilsol/timeless-jewels](https://github.com/Vilsol/timeless-jewels)（Contributors: Vilsol, Zorgie, shafouz 等）。
 
-* Alternate Passive Additions
-* Alternate Passive Skills
-* Passive Skills
-* Stats
-* Translations
+- **商標與名稱：**  
+  本站未使用原專案之商標、logo 或官方名稱，以避免誤導使用者；  
+  本站名稱與視覺僅代表此 fork 版本，與原專案無關。
+
+---
+
+## 功能簡介
+
+永恆珠寶計算器，搭配天賦樹檢視。  
+資料來源說明見原專案（含 [go-pob-data](https://github.com/Vilsol/go-pob-data)）。
+
+## 新聯盟更新
+
+被動天賦在新聯盟可能變更，且需等到有遊戲檔案後，資料才會完整。  
+本專案依賴的資料表包括：Alternate Passive Additions、Alternate Passive Skills、Passive Skills、Stats、Translations 等（詳見原專案）。
+
+## 本站 logo
+
+- 網站頂部小 logo：請將你的圖檔放在 `frontend/static/logo.png`，建置後會自動使用。
+- 瀏覽器分頁圖示：可替換 `frontend/static/favicon.png`。

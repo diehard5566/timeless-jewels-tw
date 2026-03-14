@@ -731,7 +731,7 @@
   {/if}
 
   <div class="text-orange-500 absolute bottom-0 right-0 m-2">
-    <a href="https://github.com/Vilsol/timeless-jewels" target="_blank" rel="noopener">原始碼（GitHub）</a>
+    <a href="https://github.com/Vilsol/timeless-jewels" target="_blank" rel="noopener">基於 Vilsol/timeless-jewels（原始碼）</a>
   </div>
 </SkillTree>
 
