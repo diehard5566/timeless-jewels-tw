@@ -147,6 +147,8 @@ func init() {
 			}
 		}
 	}
+	// 補上非 addition 來源的 stat 繁中（避免與 addition 同 index 時翻錯，如 490 為 minion、melee_physical 另用 stat id）
+	statIdToChinese["melee_physical_damage_+%"] = "增加 #% 近戰物理傷害"
 	StatIdToChineseJSON, err = json.Marshal(statIdToChinese)
 	if err != nil {
 		panic(err)
