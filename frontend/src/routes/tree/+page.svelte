@@ -7,7 +7,7 @@
   import { getAffectedNodes, skillTree, translateStat, openTrade } from '../../lib/skill_tree';
   import { syncWrap } from '../../lib/worker';
   import { proxy } from 'comlink';
-  import type { ReverseSearchConfig, StatConfig } from '../../lib/skill_tree';
+  import type { ReverseSearchConfig, SearchWithSeed, StatConfig } from '../../lib/skill_tree';
   import SearchResults from '../../lib/components/SearchResults.svelte';
   import { statValues } from '../../lib/values';
   import { data, calculator } from '../../lib/types';
@@ -25,10 +25,16 @@
   let selectedJewel = searchParams.has('jewel') ? (jewels ?? []).find((j) => j.value == searchParams.get('jewel')) : undefined;
 
   $: conquerors = selectedJewel && data?.TimelessJewelConquerors?.[selectedJewel.value]
-    ? Object.keys(data?.TimelessJewelConquerors[selectedJewel.value]).map((k) => ({
-        value: k,
-        label: getConquerorLabel(data?.ConquerorNameTW, k)
-      }))
+    ? [
+        {
+          value: '',
+          label: '全部（不選人名）'
+        },
+        ...Object.keys(data?.TimelessJewelConquerors[selectedJewel.value]).map((k) => ({
+          value: k,
+          label: getConquerorLabel(data?.ConquerorNameTW, k)
+        }))
+      ]
     : [];
 
   const conquerorFromUrl = searchParams.get('conqueror');
@@ -37,7 +43,10 @@
         value: conquerorFromUrl,
         label: getConquerorLabel(data?.ConquerorNameTW, conquerorFromUrl)
       }
-    : undefined;
+    : {
+        value: '',
+        label: '全部（不選人名）'
+      };
 
   let seed: number = searchParams.has('seed') ? parseInt(searchParams.get('seed')) : 0;
 
@@ -90,7 +99,9 @@
   const updateUrl = () => {
     const url = new URL(window.location.origin + window.location.pathname);
     selectedJewel && url.searchParams.append('jewel', selectedJewel.value.toString());
-    selectedConqueror && url.searchParams.append('conqueror', selectedConqueror.value);
+    if (selectedConqueror && selectedConqueror.value !== '') {
+      url.searchParams.append('conqueror', selectedConqueror.value);
+    }
     seed && url.searchParams.append('seed', seed.toString());
     circledNode && url.searchParams.append('location', circledNode.toString());
     mode && url.searchParams.append('mode', mode);
@@ -164,6 +175,10 @@
 
   const changeJewel = () => {
     selectedStats = {};
+    selectedConqueror = {
+      value: '',
+      label: '全部（不選人名）'
+    };
     updateUrl();
   };
 
@@ -171,6 +186,7 @@
   let minTotalWeight = 0;
   let searching = false;
   let currentSeed = 0;
+  let currentSeedTotal = 0;
   let searchResults: SearchResults;
   let searchJewel = 1;
   let searchConqueror = '';
@@ -183,6 +199,14 @@
     searchConqueror = selectedConqueror.value;
     searching = true;
     searchResults = undefined;
+    currentSeed = 0;
+
+    const selectedConquerors = selectedConqueror.value === ''
+      ? Object.keys(data?.TimelessJewelConquerors?.[selectedJewel.value] || {})
+      : [selectedConqueror.value];
+    const range = data?.TimelessJewelSeedRanges?.[selectedJewel.value];
+    const seedCount = range ? Math.max(1, range.Max - range.Min + 1) : 0;
+    currentSeedTotal = seedCount * selectedConquerors.length;
 
     const query: ReverseSearchConfig = {
       jewel: selectedJewel.value,
@@ -205,6 +229,10 @@
         searchResults = result;
         searching = false;
         results = true;
+      })
+      .catch((error) => {
+        console.error('reverse search failed', error);
+        searching = false;
       });
   };
 
@@ -515,8 +543,8 @@
                 <button
                   class="p-1 px-3 bg-blue-500/40 rounded disabled:bg-blue-900/40"
                   on:click={() => openTrade(searchJewel, searchConqueror, searchResults.raw, platform.value, league.value)}
-                  disabled={!searchResults}>
-                  交易
+                  disabled={!searchResults || searchConqueror === ''}>
+                  {searchConqueror === '' ? '交易（全部人名不支援）' : '交易'}
                 </button>
                 <button
                   class="p-1 px-3 bg-blue-500/40 rounded disabled:bg-blue-900/40"
@@ -542,7 +570,7 @@
               <Select items={conquerors} bind:value={selectedConqueror} on:change={updateUrl} />
             </div>
 
-            {#if selectedConqueror && Object.keys(data?.TimelessJewelConquerors[selectedJewel.value]).indexOf(selectedConqueror.value) >= 0}
+            {#if selectedConqueror}
               <div class="mt-4 w-full flex flex-row">
                 <button class="selection-button" class:selected={mode === 'seed'} on:click={() => setMode('seed')}>
                   輸入種子
@@ -698,7 +726,7 @@
                         on:click={() => search()}
                         disabled={searching}>
                         {#if searching}
-                          {currentSeed} / {data?.TimelessJewelSeedRanges[selectedJewel.value].Max}
+                          {currentSeed} / {currentSeedTotal}
                         {:else}
                           搜尋
                         {/if}

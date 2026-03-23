@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { SearchResults, SearchWithSeed } from '../skill_tree';
+  import { openTrade } from '../skill_tree';
   import SearchResult from './SearchResult.svelte';
   import VirtualList from 'svelte-tiny-virtual-list';
 
@@ -23,16 +24,24 @@
       .map((x) => parseInt(x))
       .sort((a, b) => a - b)
       .reverse() as k}
-      <button
-        class="text-lg w-full p-2 px-4 bg-neutral-500/30 rounded flex flex-row justify-between mb-2"
-        on:click={() => (expandedGroup = expandedGroup === k ? '' : k)}>
-        <span>
-          {k} 筆符合 [{searchResults.grouped[k].length}]
-        </span>
-        <span>
-          {expandedGroup === k ? '^' : 'V'}
-        </span>
-      </button>
+      <div class="flex flex-row items-center gap-2 mb-2">
+        <button
+          class="text-lg w-full p-2 px-4 bg-neutral-500/30 rounded flex flex-row justify-between"
+          on:click={() => (expandedGroup = expandedGroup === k ? '' : k)}>
+          <span>
+            {k} 筆符合 [{searchResults.grouped[k].length}]
+          </span>
+          <span>
+            {expandedGroup === k ? '^' : 'V'}
+          </span>
+        </button>
+        <button
+          class="p-2 px-3 bg-blue-500/40 rounded disabled:bg-blue-900/40"
+          on:click={() => openTrade(jewel, conqueror, searchResults.grouped[k], platform, league)}
+          disabled={searchResults.grouped[k].length === 0}>
+          該組交易
+        </button>
+      </div>
 
       {#if expandedGroup === k}
         <div class="flex flex-col overflow-auto min-h-[200px] mb-2">

@@ -1,6 +1,8 @@
 <script lang="ts">
   import type { SearchWithSeed } from '../skill_tree';
   import { skillTree, translateStat, openTrade } from '../skill_tree';
+  import { data } from '../types';
+  import { getConquerorLabel } from '../jewel-labels';
 
   export let highlight: (newSeed: number, passives: number[]) => void;
   export let set: SearchWithSeed;
@@ -22,8 +24,13 @@
     <button class="px-3 invisible">交易</button>
     <div class="font-bold text-orange-500 text-center">
       種子 {set.seed}（權重 {set.weight}）
+      {#if set.conqueror && set.conqueror !== ''}
+        <span class="ml-1 text-sm text-neutral-200">[{getConquerorLabel(data?.ConquerorNameTW, set.conqueror)}]</span>
+      {/if}
     </div>
-    <button class="px-3 bg-blue-500/40 rounded" on:click={() => openTrade(jewel, conqueror, [set], platform, league)}>交易</button>
+    <button class="px-3 bg-blue-500/40 rounded" on:click={() => openTrade(jewel, set.conqueror || conqueror, [set], platform, league)}>
+      交易
+    </button>
   </div>
   {#each set.skills as skill}
     <div class="mt-2">
