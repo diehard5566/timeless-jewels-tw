@@ -758,8 +758,14 @@
     </button>
   {/if}
 
-  <div class="text-orange-500 absolute bottom-0 right-0 m-2">
-    <a href="https://github.com/Vilsol/timeless-jewels" target="_blank" rel="noopener">基於 Vilsol/timeless-jewels（原始碼）</a>
+  <div class="text-orange-500 absolute bottom-0 right-0 m-2 text-right">
+    <div>
+      <a class="text-lg font-semibold" href="https://payment.opay.tw/Broadcaster/Donate/A88A8507787D65A4F01A269BB4EE75C0" target="_blank" rel="noopener">點擊進入歐付寶贊助此站</a>
+    </div>
+
+    <div>
+      <a class="text-xs opacity-80" href="https://github.com/Vilsol/timeless-jewels" target="_blank" rel="noopener">基於 Vilsol/timeless-jewels（原始碼）</a>
+    </div>
   </div>
 </SkillTree>
 
