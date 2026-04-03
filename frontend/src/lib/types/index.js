@@ -8,6 +8,7 @@ export const initializeCrystalline = () => {
     ReverseSearch: globalThis["go"]["timeless-jewels"]["calculator"]["ReverseSearch"],
   }
   data = {
+    ConquerorNameTW: globalThis["go"]["timeless-jewels"]["data"]["ConquerorNameTW"],
     GetAlternatePassiveAdditionByIndex: globalThis["go"]["timeless-jewels"]["data"]["GetAlternatePassiveAdditionByIndex"],
     GetAlternatePassiveSkillByIndex: globalThis["go"]["timeless-jewels"]["data"]["GetAlternatePassiveSkillByIndex"],
     GetPassiveSkillByIndex: globalThis["go"]["timeless-jewels"]["data"]["GetPassiveSkillByIndex"],
@@ -19,7 +20,6 @@ export const initializeCrystalline = () => {
     SkillTree: globalThis["go"]["timeless-jewels"]["data"]["SkillTree"],
     StatIdToChineseJSON: globalThis["go"]["timeless-jewels"]["data"]["StatIdToChineseJSON"],
     StatTranslationsJSON: globalThis["go"]["timeless-jewels"]["data"]["StatTranslationsJSON"],
-    ConquerorNameTW: globalThis["go"]["timeless-jewels"]["data"]["ConquerorNameTW"],
     TimelessJewelConquerors: globalThis["go"]["timeless-jewels"]["data"]["TimelessJewelConquerors"],
     TimelessJewelSeedRanges: globalThis["go"]["timeless-jewels"]["data"]["TimelessJewelSeedRanges"],
     TimelessJewels: globalThis["go"]["timeless-jewels"]["data"]["TimelessJewels"],

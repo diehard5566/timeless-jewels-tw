@@ -349,35 +349,29 @@ export interface SearchResults {
 }
 
 export const translateStat = (id: number, roll?: number | undefined): string => {
-  const chinese = statChinese[id];
-  if (chinese !== undefined) {
-    if (roll !== undefined) {
-      return chinese.replace(/#/, String(roll));
-    }
-    return chinese;
-  }
-
   const stat = getStat(id);
+  const applyTemplate = (template: string) => {
+    if (roll !== undefined) {
+      return template.replace(/#/, String(roll));
+    }
+    return template;
+  };
+
   const staticChinese = (statIdChineseFromData as Record<string, string>)[stat.ID];
   if (staticChinese !== undefined) {
-    if (roll !== undefined) {
-      return staticChinese.replace(/#/, String(roll));
-    }
-    return staticChinese;
+    return applyTemplate(staticChinese);
   }
   const wasmChinese = statIdToChineseFromWasm[stat.ID];
   if (wasmChinese !== undefined) {
-    if (roll !== undefined) {
-      return wasmChinese.replace(/#/, String(roll));
-    }
-    return wasmChinese;
+    return applyTemplate(wasmChinese);
   }
   const idChinese = statIdChinese[stat.ID];
   if (idChinese !== undefined) {
-    if (roll !== undefined) {
-      return idChinese.replace(/#/, String(roll));
-    }
-    return idChinese;
+    return applyTemplate(idChinese);
+  }
+  const legacyByNumericIndex = statChinese[id];
+  if (legacyByNumericIndex !== undefined) {
+    return applyTemplate(legacyByNumericIndex);
   }
 
   const translation = inverseTranslations[stat.ID];

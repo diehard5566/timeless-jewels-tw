@@ -4,7 +4,9 @@ import (
 	"bytes"
 	"compress/gzip"
 	"encoding/json"
+	"fmt"
 	"io"
+	"sort"
 
 	_ "embed"
 )
@@ -136,19 +138,36 @@ func init() {
 	// GGG stat 來源：Stats.json（見 update_assets.sh，從 go-pob-data 下載）。
 	// AlternatePassiveAdditions.StatsKeys 為 stat index，對應 Stats 的 _key；Stat.Id 即 GGG 的 stat ID。
 	statIdToChinese := make(map[string]string)
-	for _, add := range AlternatePassiveAdditions {
+	assignStatIDChinese := func(statID string, chinese string) {
+		if prev, ok := statIdToChinese[statID]; ok {
+			if prev != chinese {
+				panic(fmt.Sprintf("stat Id 繁中衝突: %s\n  已有: %s\n  新值: %s", statID, prev, chinese))
+			}
+			return
+		}
+		statIdToChinese[statID] = chinese
+	}
+
+	additionsOrdered := append([]*AlternatePassiveAddition(nil), AlternatePassiveAdditions...)
+	sort.Slice(additionsOrdered, func(i, j int) bool {
+		return additionsOrdered[i].Index < additionsOrdered[j].Index
+	})
+	for _, add := range additionsOrdered {
 		chinese, ok := AdditionIDToChinese[add.ID]
 		if !ok {
 			continue
 		}
 		for _, statIndex := range add.StatsKeys {
-			if stat, ok := idToStat[statIndex]; ok && stat != nil {
-				statIdToChinese[stat.ID] = chinese
+			stat, ok := idToStat[statIndex]
+			if !ok || stat == nil {
+				continue
 			}
+			assignStatIDChinese(stat.ID, chinese)
 		}
 	}
-	// 補上非 addition 來源的 stat 繁中（避免與 addition 同 index 時翻錯，如 490 為 minion、melee_physical 另用 stat id）
-	statIdToChinese["melee_physical_damage_+%"] = "增加 #% 近戰物理傷害"
+	for statID, chinese := range ExtraStatIdToChinese {
+		assignStatIDChinese(statID, chinese)
+	}
 	StatIdToChineseJSON, err = json.Marshal(statIdToChinese)
 	if err != nil {
 		panic(err)

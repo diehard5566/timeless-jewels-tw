@@ -2,6 +2,7 @@ package data
 
 // AdditionIDToChinese maps AlternatePassiveAddition.Id (poedb Code) to 繁中 template.
 // # is placeholder for numeric value. Ref: https://poedb.tw/tw/Timeless_Jewel#永恆珠寶天賦Additions
+// 與 ExtraStatIdToChinese 合併時，同一 stat.Id 不得對應不同文案，否則 data.init 會 panic。
 var AdditionIDToChinese = map[string]string{
 	"vaal_small_fire_damage": "增加 #% 火焰傷害",
 	"vaal_small_cold_damage": "增加 #% 冰冷傷害",

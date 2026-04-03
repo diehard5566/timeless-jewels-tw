@@ -73,6 +73,7 @@ export declare namespace data {
     Index: number;
     Version: number;
   }
+  const ConquerorNameTW: Record<string, string> | undefined;
   function GetAlternatePassiveAdditionByIndex(index: number): (data.AlternatePassiveAddition | undefined);
   function GetAlternatePassiveSkillByIndex(index: number): (data.AlternatePassiveSkill | undefined);
   function GetPassiveSkillByIndex(index: number): (data.PassiveSkill | undefined);
@@ -84,7 +85,6 @@ export declare namespace data {
   const SkillTree: string;
   const StatIdToChineseJSON: string;
   const StatTranslationsJSON: string;
-  const ConquerorNameTW: Record<string, string> | undefined;
   const TimelessJewelConquerors: Record<number, Record<string, data.TimelessJewelConqueror | undefined> | undefined> | undefined;
   const TimelessJewelSeedRanges: Record<number, data.Range> | undefined;
   const TimelessJewels: Record<number, string> | undefined;
